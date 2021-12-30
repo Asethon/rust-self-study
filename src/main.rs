@@ -1,10 +1,8 @@
-#[derive(Debug)]
 struct Phone<'a> {
     number: &'a str,
     rule: &'a Rule
 }
 
-#[derive(Debug)]
 struct Rule {
     abbreviation: &'static str,
     len: i8,
@@ -40,19 +38,14 @@ fn main() {
     let mut phones: Vec<Phone> = vec![];
 
     for number in numbers {
-        let mut phone: Option<Phone>;
         for rule in &rules {
-            phone = if rule.code == &number[0..rule.code.len()] {
-                Some(Phone::validate(number, rule).unwrap())
-            } else {
-                None
-            };
-
-            match phone {
-                Some(t) => {
-                    phones.push(t);
-                },
-                None => {}
+            if rule.code == &number[0..rule.code.len()] {
+                match Phone::validate(number, rule) {
+                    Some(t) => {
+                        phones.push(t);
+                    },
+                    None => {}
+                }
             }
         }
     }
