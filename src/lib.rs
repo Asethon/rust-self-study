@@ -17,10 +17,10 @@ impl Rule<'_> {
 }
 
 impl Phone<'_> {
-    pub fn validate<'a>(number: &'a str, rule: &'a Rule<'a>) -> Option<Box<Phone<'a>>>
+    pub fn validate<'a>(number: &'a str, rule: &'a Rule<'a>) -> Option<Phone<'a>>
     {
         return if number.len() == rule.len as usize {
-            Some(Box::new(Phone { number, rule }))
+            Some(Phone { number, rule })
         } else {
             None
         };
@@ -32,22 +32,17 @@ impl Phone<'_> {
         println!("Number len: {}", self.number.len());
         println!("Number code: {}", self.rule.code);
         println!();
-        println!();
-        println!();
     }
 }
 
 pub fn create_phones<'a>(numbers: &'a Vec<&'a str>, rules: &'a Vec<Rule<'a>>) -> Vec<Phone<'a>> {
-    let mut phones: Vec<Phone> = Vec::new();
-    for number in numbers {
-        for rule in rules {
-            if rule.code == &number[0..rule.code.len()] {
-                match Phone::validate(number, rule) {
-                    Some(t) => phones.push(*t),
-                    None => {}
-                }
-            }
-        }
-    }
-    phones
+    numbers
+        .iter()
+        .flat_map(|number| {
+            rules
+                .iter()
+                .filter(|rule| number.starts_with(&rule.code))
+                .filter_map(|rule| Phone::validate(number, rule))
+        })
+        .collect()
 }
